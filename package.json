@@ -1,0 +1,10 @@
+{
+  "name": "analyseur_notes_gel",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+	"async": "^2.5.0",
+	"jsdom": "^9.2.1",
+	"underscore": "^1.8.3"
+  }
+}
