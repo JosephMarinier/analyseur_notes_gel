@@ -4,6 +4,8 @@ var https = require("https");
 var jsdom = require("jsdom");
 var _ = require("underscore");
 
+var {rowify} = require("./stringUtils");
+
 function lire(file, callback) {
     fs.readFile(file, "utf8", function (error, body) {
         if (error) {
@@ -218,11 +220,58 @@ function cote(note, ponderation) {
 
 function main() {
 	var session = process.argv[process.execArgv.length + 2];
-	var niveau = process.argv[process.execArgv.length + 3] || 1;
+	var niveau = process.argv[process.execArgv.length + 3] || "rowify";
 	var nom = process.argv[process.execArgv.length + 4];
 
 	trol(session, nom, function (error, APs) {
-		if (niveau == 0) {
+		if (niveau === "rowify") {
+			console.log();
+			console.log(rowify(APs.map(function (AP) {
+				var temp = AP.total;
+				
+				var ligne = {
+					AP: {
+						code: AP.code,
+						titre: AP.nom,
+						cr: String(temp.absolu / 300), // TODO String() dans stringUtils
+					},
+					"note / corrigé": {
+						note: fraction(temp.note, temp.ponderation),
+					},
+				};
+				
+				
+				if (temp.note) {
+					ligne["note / corrigé"]["%"] = pourcentage(temp.note, temp.ponderation) + "%";
+					ligne["note / corrigé"].lettre = lettre(temp.note, temp.ponderation);
+					
+					ligne["moyenne / corrigé"] = {
+						note: fraction(temp.moyenne, temp.ponderation),
+						"%": pourcentage(temp.moyenne, temp.ponderation) + "%",
+						lettre: lettre(temp.moyenne, temp.ponderation),
+						écart: pourcentage(temp.note - temp.moyenne, temp.ponderation) + "%",
+					};
+					
+					if (temp.absolu && temp.ponderation < temp.absolu) {
+						ligne["note / total"] = {
+							note: fraction(temp.note, temp.absolu),
+							"%": pourcentage(temp.note, temp.absolu) + "%",
+						};
+						
+						var restant = temp.absolu - temp.ponderation;
+						var objectif = 0.85 * temp.absolu - temp.note;
+						ligne["objectif A+"] = {
+							note: fraction(objectif, restant),
+							"%": pourcentage(objectif, restant) + "%",
+						};
+					}
+				}
+				return ligne;
+			}), {
+				delimiters: [" | ", " : ", " "]
+			}));
+			console.log();
+		} else if (niveau === 0) {
 			console.log(_(APs).map(function (AP) {
 				return AP.code + _(AP.compétences).map(function () {
 					return ";";
