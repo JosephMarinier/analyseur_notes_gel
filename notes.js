@@ -226,40 +226,38 @@ function main() {
 	trol(session, nom, function (error, APs) {
 		if (niveau === "rowify") {
 			console.log();
-			console.log(rowify(APs.map(function (AP) {
-				var temp = AP.total;
-				
+            console.log(rowify(APs.map(function ({code, nom, total: {note, moyenne, variance, ponderation, absolu}}) {
 				var ligne = {
 					AP: {
-						code: AP.code,
-						titre: AP.nom,
-						cr: String(temp.absolu / 300), // TODO String() dans stringUtils
+						code: code,
+						titre: nom,
+						cr: absolu / 300,
 					},
 					"note / corrigé": {
-						note: fraction(temp.note, temp.ponderation),
+						note: fraction(note, ponderation),
 					},
 				};
 				
 				
-				if (temp.note) {
-					ligne["note / corrigé"]["%"] = pourcentage(temp.note, temp.ponderation) + "%";
-					ligne["note / corrigé"].lettre = lettre(temp.note, temp.ponderation);
+				if (note) {
+					ligne["note / corrigé"]["%"] = pourcentage(note, ponderation) + "%";
+					ligne["note / corrigé"][""] = lettre(note, ponderation);
 					
 					ligne["moyenne / corrigé"] = {
-						note: fraction(temp.moyenne, temp.ponderation),
-						"%": pourcentage(temp.moyenne, temp.ponderation) + "%",
-						lettre: lettre(temp.moyenne, temp.ponderation),
-						écart: pourcentage(temp.note - temp.moyenne, temp.ponderation) + "%",
+						note: fraction(moyenne, ponderation),
+						"%": pourcentage(moyenne, ponderation) + "%",
+						"": lettre(moyenne, ponderation),
+						"Δ": pourcentage(note - moyenne, ponderation) + "%",
 					};
 					
-					if (temp.absolu && temp.ponderation < temp.absolu) {
+					if (absolu && ponderation < absolu) {
 						ligne["note / total"] = {
-							note: fraction(temp.note, temp.absolu),
-							"%": pourcentage(temp.note, temp.absolu) + "%",
+							note: fraction(note, absolu),
+							"%": pourcentage(note, absolu) + "%",
 						};
 						
-						var restant = temp.absolu - temp.ponderation;
-						var objectif = 0.85 * temp.absolu - temp.note;
+						var restant = absolu - ponderation;
+						var objectif = 0.85 * absolu - note;
 						ligne["objectif A+"] = {
 							note: fraction(objectif, restant),
 							"%": pourcentage(objectif, restant) + "%",

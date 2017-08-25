@@ -10,7 +10,7 @@ var _ = require('underscore');
  * @returns {string} The given value, padded or truncated to the given width.
  */
 function center(width, value, padding) {
-	value = value || '';
+    value = (value ? String(value) : '');
     padding = (padding ? String(padding)[0] : ' ');
     if (value.length > width) {
         return value.slice(0, width);
@@ -34,7 +34,7 @@ function center(width, value, padding) {
  * @returns {string} The given value, padded or truncated to the given width.
  */
 function left(width, value, padding) {
-	value = value || '';
+    value = (value ? String(value) : '');
     padding = (padding ? String(padding)[0] : ' ');
     if (value.length > width) {
         return value.slice(0, width);
@@ -55,7 +55,7 @@ function left(width, value, padding) {
  * @returns {string} The given value, padded or truncated to the given width.
  */
 function right(width, value, padding) {
-	value = value || '';
+    value = (value ? String(value) : '');
     padding = (padding ? String(padding)[0] : ' ');
     if (value.length > width) {
         return value.slice(0, width);
@@ -154,9 +154,10 @@ function rowify(lines, options) {
                     delimiters.length > 1 ? _.rest(delimiters) : delimiters
                 );
 
-                if (nestedWidth < header.length) {
+				let width = String(header).length;
+                if (nestedWidth < width) {
                     // Augment last nested header's width by the difference
-                    adjustColWidth(nested, header.length - nestedWidth);
+                    adjustColWidth(nested, width - nestedWidth);
                 }
 
                 return nestedWidth;
@@ -176,7 +177,7 @@ function rowify(lines, options) {
                 getDeepest(nested, line[header]);
                 return false;
             }
-            line[header] = header.toUpperCase();
+            line[header] = header;
             return true;
         });
         return line;
@@ -190,7 +191,7 @@ function rowify(lines, options) {
                     line[header] = Object.create(null);
                     reduceDept(nested, line[header]);
                 } else {
-                    line[header] = header.toUpperCase();
+                    line[header] = header;
                 }
             }
         });
