@@ -137,6 +137,7 @@ function trol(session, nom, callback) {
 					AP.total = {
 						note: 0,
 						moyenne: 0,
+						variance: 0,
 						ponderation: 0,
 						absolu: 0
 					};
@@ -144,6 +145,7 @@ function trol(session, nom, callback) {
 						var total = {
 							note: 0,
 							moyenne: 0,
+							variance: 0,
 							ponderation: 0,
 							absolu: 0
 						};
@@ -153,8 +155,10 @@ function trol(session, nom, callback) {
 							if (notes[i].compétences && notes[i].compétences[j] && notes[i].compétences[j][évaluation]) {
 								temp.note = Number(notes[i].compétences[j][évaluation].note);
 								temp.moyenne = Number(notes[i].compétences[j][évaluation].moyenne);
+								temp.variance = Math.pow(Number(notes[i].compétences[j][évaluation].ecartType), 2);
 								total.note += temp.note;
 								total.moyenne += temp.moyenne;
+								total.variance += temp.variance;
 								total.ponderation += temp.ponderation;
 							}
 							total.absolu += temp.ponderation;
@@ -163,6 +167,7 @@ function trol(session, nom, callback) {
 						
 						AP.total.note += total.note;
 						AP.total.moyenne += total.moyenne;
+						AP.total.variance += total.variance;
 						AP.total.ponderation += total.ponderation;
 						AP.total.absolu += total.absolu;
 						lol.total = total;
@@ -260,11 +265,14 @@ function main() {
 					ligne["note / corrigé"]["%"] = pourcentage(note, ponderation) + "%";
 					ligne["note / corrigé"][""] = lettre(note, ponderation);
 					
+					let écart_type = Math.sqrt(variance);
 					ligne["moyenne / corrigé"] = {
 						note: fraction(moyenne, ponderation),
 						"%": pourcentage(moyenne, ponderation) + "%",
 						"": lettre(moyenne, ponderation),
+						"σ": pourcentage(écart_type, ponderation) + "%",
 						"Δ": pourcentage(note - moyenne, ponderation) + "%",
+						"Δ/σ": arrondi((note - moyenne) / écart_type),
 					};
 					
 					if (absolu && ponderation < absolu) {
