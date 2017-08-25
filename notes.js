@@ -243,8 +243,7 @@ function main() {
 
 	trol(session, nom, function (error, {APs, total: {M, Z, P, D}}) {
 		if (niveau === "rowify") {
-			console.log();
-            console.log(rowify(APs.map(function ({code, nom, total: {note, moyenne, variance, ponderation, absolu}}) {
+			const lignes = [...APs.map(function ({code, nom, total: {note, moyenne, variance, ponderation, absolu}}) {
 				var ligne = {
 					AP: {
 						code: code,
@@ -284,6 +283,18 @@ function main() {
 				}
 				return ligne;
 			}), {
+				AP: {
+					code: "total",
+				},
+				"note / corrigé": {
+					note: fraction(M, P),
+					"%": pourcentage(M, P),
+					"": arrondi(Z/D),
+				}
+			}];
+			
+			console.log();
+			console.log(rowify(lignes, {
 				delimiters: [" | ", " : ", " "]
 			}));
 			console.log();
