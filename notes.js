@@ -124,7 +124,15 @@ function trol(session, nom, callback) {
 					console.error("code2name");
 					console.error(err);
 				}
-				callback(null, _(pondération).map(function (AP, i) {
+				
+				const total = {
+					M: 0,
+					Z: 0,
+					P: 0,
+					D: 0,
+				};
+				
+				const APs = _(pondération).map(function (AP, i) {
 					AP.nom = noms[i];
 					AP.total = {
 						note: 0,
@@ -161,8 +169,18 @@ function trol(session, nom, callback) {
 						return lol;
 					});
 					
+					total.M += AP.total.note;
+					total.Z += cote(AP.total.note, AP.total.ponderation) * AP.total.absolu;
+					total.P += AP.total.ponderation
+					total.D += AP.total.absolu;
+					
 					return AP;
-				}));
+				});
+				
+				callback(null, {
+					APs: APs,
+					total: total,
+				});
 			});
 		});
 	});
@@ -223,7 +241,7 @@ function main() {
 	var niveau = process.argv[process.execArgv.length + 3] || "rowify";
 	var nom = process.argv[process.execArgv.length + 4];
 
-	trol(session, nom, function (error, APs) {
+	trol(session, nom, function (error, {APs, total: {M, Z, P, D}}) {
 		if (niveau === "rowify") {
 			console.log();
             console.log(rowify(APs.map(function ({code, nom, total: {note, moyenne, variance, ponderation, absolu}}) {
@@ -288,11 +306,6 @@ function main() {
 				}, memo);
 			}, []).join(";"));
 		} else {
-			var M = 0;
-			var Z = 0;
-			var P = 0;
-			var D = 0;
-
 			_(APs).each(function (AP, i) {
 				console.log();
 				console.log(AP.code + " - " + AP.nom);
@@ -314,10 +327,6 @@ function main() {
 				});
 				
 				console.log("Total : " + note(AP.total));
-				M += AP.total.note;
-				Z += cote(AP.total.note, AP.total.ponderation) * AP.total.absolu;
-				P += AP.total.ponderation
-				D += AP.total.absolu;
 			});
 			
 			console.log();
