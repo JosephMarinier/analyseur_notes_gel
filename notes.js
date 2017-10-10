@@ -7,11 +7,11 @@ var _ = require("underscore");
 var {rowify} = require("./stringUtils");
 
 function lire(file, callback) {
-    fs.readFile(file, "utf8", function (error, body) {
-        if (error) {
-            callback(error);
-            return;
-        }
+	fs.readFile(file, "utf8", function (error, body) {
+		if (error) {
+			callback(error);
+			return;
+		}
 		
 		jsdom.env(body, function (error, window) {
 			if (error) {
@@ -76,33 +76,33 @@ function lire(file, callback) {
 			
 			callback(undefined, APs);
 		});
-    })
+	})
 }
 
 function code2name(code, callback) {
 	https.get({
-        host: "www.usherbrooke.ca",
-        path: "/fiches-cours/" + code
-    }, function (response) {
-        var body = "";
-        response.on("data", function (chunk) {
-            body += chunk;
-        });
-        response.on("end", function () {
-            jsdom.env(body, function (error, window) {
-                if (error) {
-                    callback(error);
-                    return;
-                }
-             
-                //var $ = require("jquery")(window);
-                //callback(undefined, $("h1").text());
-                callback(undefined, window.document.getElementsByTagName("h1")[0] && window.document.getElementsByTagName("h1")[0].innerHTML);
-            });
-        });
-    }).on("error", function (error) {
-        callback(error);
-    });
+		host: "www.usherbrooke.ca",
+		path: "/fiches-cours/" + code
+	}, function (response) {
+		var body = "";
+		response.on("data", function (chunk) {
+			body += chunk;
+		});
+		response.on("end", function () {
+			jsdom.env(body, function (error, window) {
+				if (error) {
+					callback(error);
+					return;
+				}
+			 
+				//var $ = require("jquery")(window);
+				//callback(undefined, $("h1").text());
+				callback(undefined, window.document.getElementsByTagName("h1")[0] && window.document.getElementsByTagName("h1")[0].innerHTML);
+			});
+		});
+	}).on("error", function (error) {
+		callback(error);
+	});
 }
 
 // callback(error, APs)
@@ -192,7 +192,7 @@ function trol(session, nom, callback) {
 }
 
 function note(temp) {
-    var string = fraction(temp.note, temp.ponderation);
+	var string = fraction(temp.note, temp.ponderation);
 	if (temp.note) {
 		string += " = " + pourcentage(temp.note, temp.ponderation) + " % = " + lettre(temp.note, temp.ponderation)
 			+ " [" + fraction(temp.moyenne, temp.ponderation) + " = " + pourcentage(temp.moyenne, temp.ponderation) + " % = " + lettre(temp.moyenne, temp.ponderation)
@@ -204,7 +204,7 @@ function note(temp) {
 			string += " | " + fraction(objectif, restant) + " = " + pourcentage(objectif, restant) + " %";
 		}
 	}
-    return string;
+	return string;
 }
 
 function arrondi(note) {
@@ -212,11 +212,11 @@ function arrondi(note) {
 }
 
 function fraction(note, ponderation) {
-    return arrondi(note) + "/" + arrondi(ponderation);
+	return arrondi(note) + "/" + arrondi(ponderation);
 }
 
 function pourcentage(note, ponderation) {
-    return Math.round(note*10000/ponderation)/100;
+	return Math.round(note*10000/ponderation)/100;
 }
 
 function rang(note, ponderation) {
@@ -230,13 +230,13 @@ function rang(note, ponderation) {
 }
 
 function lettre(note, ponderation) {
-	var lettres = ['E',  'D',  'D+', 'C-', 'C',  'C+', 'B-', 'B',  'B+', 'A-', 'A',  'A+'];
+	var lettres = ['E',	 'D',  'D+', 'C-', 'C',	 'C+', 'B-', 'B',  'B+', 'A-', 'A',	 'A+'];
 	
 	return lettres[rang(note, ponderation)];
 }
 
 function cote(note, ponderation) {
-	var cotes =   [0,    1,    1.3,  1.7,  2,    2.3,  2.7,  3,    3.3,  3.7,  4,    4.3];
+	var cotes =	  [0,	 1,	   1.3,	 1.7,  2,	 2.3,  2.7,	 3,	   3.3,	 3.7,  4,	 4.3];
 	
 	return cotes[rang(note, ponderation)];
 }
@@ -336,7 +336,7 @@ function main() {
 						_(compétence).each(function (temp, évaluation) {
 							if (temp.note) {
 								if (niveau > 2) {
-									console.log("    " + évaluation + " : " + note(temp));
+									console.log("	 " + évaluation + " : " + note(temp));
 								}
 							}
 						});
